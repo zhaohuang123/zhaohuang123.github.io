@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/CaptainAmerica.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/CaptainAmerica.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/CaptainAmerica.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/CaptainAmerica.png?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="LDA,sklearn," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Trueno's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="本文主要是介绍如何利用sklearn框架中LatentDirichletAllocation类完成LDA模型的训练。 理论基础&amp;emsp;&amp;emsp;LDA是一个无监督的学习模型，它假设每个文档包含多个主题，文档中的每个主题都是基于词的概率分布。作为一个基于贝叶斯网络的文档生成模型，LDA刻画的是文档生成的一个概率化过程。&amp;emsp;&amp;emsp;LDA的输入由一组文档D组成的词料库。LDA的输出包">
+<meta name="keywords" content="LDA,sklearn">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LDA主题模型">
+<meta property="og:url" content="http://yoursite.com/2018/07/27/LDAModel/index.html">
+<meta property="og:site_name" content="Trueno&#39;s Blog">
+<meta property="og:description" content="本文主要是介绍如何利用sklearn框架中LatentDirichletAllocation类完成LDA模型的训练。 理论基础&amp;emsp;&amp;emsp;LDA是一个无监督的学习模型，它假设每个文档包含多个主题，文档中的每个主题都是基于词的概率分布。作为一个基于贝叶斯网络的文档生成模型，LDA刻画的是文档生成的一个概率化过程。&amp;emsp;&amp;emsp;LDA的输入由一组文档D组成的词料库。LDA的输出包">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2018/07/27/LDAModel/PerplexityTrend.png">
+<meta property="og:updated_time" content="2018-07-29T13:40:06.453Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="LDA主题模型">
+<meta name="twitter:description" content="本文主要是介绍如何利用sklearn框架中LatentDirichletAllocation类完成LDA模型的训练。 理论基础&amp;emsp;&amp;emsp;LDA是一个无监督的学习模型，它假设每个文档包含多个主题，文档中的每个主题都是基于词的概率分布。作为一个基于贝叶斯网络的文档生成模型，LDA刻画的是文档生成的一个概率化过程。&amp;emsp;&amp;emsp;LDA的输入由一组文档D组成的词料库。LDA的输出包">
+<meta name="twitter:image" content="http://yoursite.com/2018/07/27/LDAModel/PerplexityTrend.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/07/27/LDAModel/"/>
+
+
+
+
+
+  <title>LDA主题模型 | Trueno's Blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+	
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Trueno's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/27/LDAModel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Trueno">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Trueno's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">LDA主题模型</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-27T10:53:33+08:00">
+                2018-07-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/主题模型/" itemprop="url" rel="index">
+                    <span itemprop="name">主题模型</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/07/27/LDAModel/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/27/LDAModel/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,943
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文主要是介绍如何利用sklearn框架中LatentDirichletAllocation类完成LDA模型的训练。</p>
+<h2 id="理论基础"><a href="#理论基础" class="headerlink" title="理论基础"></a>理论基础</h2><p>&emsp;&emsp;LDA是一个无监督的学习模型，它假设每个文档包含多个主题，文档中的每个主题都是基于词的概率分布。作为一个基于贝叶斯网络的文档生成模型，LDA刻画的是文档生成的一个概率化过程。<br>&emsp;&emsp;LDA的输入由一组文档D组成的词料库。LDA的输出包括文档主题分布$\theta$和主题中的词语的分布$\phi$。这里的$\theta$和$\phi$都假设服从多项式分布。为让分布更平滑，再假设这两个参数的先验分布服从狄利克雷分布，参数分别为$\alpha$和$\beta$。因为狄利克雷分布是多项式分布的共轭先验分布，所以假设该多项式分布的先验服从狄利克雷分布可以极大简化统计计算的过程。狄利克雷分布中有多个参数，再LDA中利用狄利克雷分布时，大多将参数设为同一个数值，这种设为同一个数值的狄利克雷分布称为对称的狄利克雷分布。以下时LDA模型生成一篇文档的方式。</p>
+<a id="more"></a>
+<blockquote><ol>
+<li><p>按照先验概率$p(d_i)$的方式选择一篇文档$d_i$。</p>
+</li>
+<li><p>从超参数$\alpha$的狄利克雷分布中取样生成文档$d_i$的多项式主题分布$\theta_i$，即主题分布$\theta_i$由超参数$\alpha$的狄利克雷分布生成。</p>
+</li>
+<li><p>用$z_{i,j}$表示从主题的多项式分布$\theta_i$中采样生成文档$d_i$第j个词的主题。</p>
+</li>
+<li><p>从超参数为$\beta$的狄利克雷分布中采样生成主题$z_{i,j}$对应的词语分布$\phi_z$，即词语分布时由超参数$\beta$的狄利克雷分布生成的。</p>
+</li>
+<li><p>$W_{i,j}$表示从词语多项式分布$\phi_z$中采样生成最终的词语。  </p>
+</li>
+</ol>
+<footer><strong>刘兵</strong><cite>情感分析：挖掘观点、情感和情绪</cite></footer></blockquote>
+<h2 id="sklearn常用类"><a href="#sklearn常用类" class="headerlink" title="sklearn常用类"></a>sklearn常用类</h2><h3 id="CountVectorizer"><a href="#CountVectorizer" class="headerlink" title="CountVectorizer"></a>CountVectorizer</h3><p>&emsp;&emsp;sklearn常用的文本特征提取类有CountVectorizer和TfidfVectorizer，以下依据<em><a href="http://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.CountVectorizer.html" target="_blank" rel="noopener">sklearn的官方文档</a></em>对CountVectorizer类中的部分参数做出解释。</p>
+<ul>
+<li><p>input：参数类型为string，当参数为<em>filename</em> 预计时需要读取文件原始内容来进行分析；当参数为 <em>file</em>，官方文档给出的解释必须要有一个read方法来读取内存中的字节内容。具体用法不知；如果不是上述两项参数，则将视为直接进行分析的字符串序列或字节流内容。</p>
+</li>
+<li><p>encoding：参数类型为string，表示对输入字符串的解码方式，默认值为<em>utf-8</em>，</p>
+</li>
+<li><p>decoder_error: 参数可选为<em>{‘strict’, ‘ignore’, ‘replace’}</em>，表示对输入内容呢，按照encoding参数设置的内容进行解码时，若出现不符合编码方式的错误时的解决办法。默认参数为strict，表示将会抛出UnicodeDecodeError错误；ignore表示忽略当前解码错误；replace参数作用尚不明确。</p>
+</li>
+<li><p>analyzer：参数可选为<em>{‘word’, ‘char’, ‘char_wb’}</em>，该参数决定特征是否应该由单词或字符的n-gram组成，char_b表示创建的n-gram特征的字符范围为文本字符，n-gram不足部分用空格填充。</p>
+</li>
+<li><p>preprocessor: 重写预处理阶段，但标记化和n-gram的步骤会保留下来，默认参数为None。</p>
+</li>
+<li><p>tokenizer：类似于preprocessor参数，重写字符串标记化过程，但会保留预处理和n-gram步骤，该参数当analyer为word时才生效。</p>
+</li>
+<li><p>ngram_range: n-gram特征提取范围，参数类型为元组(tuple): (min_n, max_n)，在$min_n \leq n \leq max_n$的n-gram都将被提取。</p>
+</li>
+<li><p>stop_word: 停用词去除参数。参数为’english’时，去除英语中的停用词；当参数为list类型的数据时，会假定该list中包含所有需要去除的停用词，将去除原始文本中该list指向的所有词，该参数当analyzer参数为word时才生效。</p>
+</li>
+<li><p>lowercase：参数类型为布尔值，默认参数为True，表示是否对文本进行小写化。</p>
+</li>
+<li><p>max_df: 该参数表示一个最大阈值，当参数类型为float时，参数范围为$[0.0, 1.0]$；当参数类型为int时，默认值为1。在建立词汇表时，若词汇中某个单词出现的频率(float)或次数(int)大于当前阈值时，该单词将不会加入到词汇统计中。</p>
+</li>
+<li><p>min_df: 该参数类似于max_df，表示最小阈值。</p>
+</li>
+<li><p>max_features: 参数类型为int，默认值为None。当参数为int时，表示构建的词汇表的词汇仅是语料中词频在排在max_features之前的词。</p>
+</li>
+</ul>
+<!-- strip_accents、token_pattern、vocabulary、binary、dtype -->
+<h3 id="LatentDirichletAllocation"><a href="#LatentDirichletAllocation" class="headerlink" title="LatentDirichletAllocation"></a>LatentDirichletAllocation</h3><p>&emsp;&emsp;sklearn中训练LDA主题模型的类是<em><a href="http://scikit-learn.org/dev/modules/generated/sklearn.decomposition.LatentDirichletAllocation.html" target="_blank" rel="noopener">LatentDirichletAllocation</a></em>。</p>
+<h4 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h4><ul>
+<li><p>n_components: 模型训练的预设主题数，参数类型为int，默认值为10。</p>
+</li>
+<li><p>doc_topic_prior: 即文档主题分布$\theta$的参数$\alpha$，参数类型为float，若参数为None，则$\alpha$参数默认为$1 / n_components$</p>
+</li>
+<li><p>topic_word_prior: 即主题词语分布$\phi$的参数$\beta$，参数类型为float，若参数为None，则$\beta$参数默认为$1 / n_components$</p>
+</li>
+<li><p>learning_method: LDA的求解算法，有’batch’和’online’两种，默认为’batch’。当数据规模较大时，’online’将比’batch’更快。</p>
+</li>
+<li><p>max_iter: 最大迭代次数，参数类型为int。</p>
+</li>
+</ul>
+<h4 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h4><ul>
+<li><p>fit(X[, y]): 利用训练数据训练LDA模型，输入参数为CountVectorizer类提取的文本词频矩阵。</p>
+</li>
+<li><p>transform(X[, y]): 利用训练好的模型推断语料X中文档的主题分布。 </p>
+</li>
+<li><p>fit_transform(X[, y]): 对输入语料（训练数据）训练LDA模型，并推断输入语料的主题分布。</p>
+</li>
+<li><p>perplexity(X[, doc_topic_distr, sub_sampling])：计算语料X的的困惑度。</p>
+</li>
+</ul>
+<h2 id="模型训练与调参"><a href="#模型训练与调参" class="headerlink" title="模型训练与调参"></a>模型训练与调参</h2><h3 id="以困惑度（Perplexity）为基础调参"><a href="#以困惑度（Perplexity）为基础调参" class="headerlink" title="以困惑度（Perplexity）为基础调参"></a>以困惑度（Perplexity）为基础调参</h3><p>&emsp;&emsp;LDA在进行训练之前，需要由算法设计人员指定主题数目参数n，主题数目的选择会在一定程度上影响主题检测的效果。 因此可以考虑计算Perplexity的值来帮助选主题数目参数。具体调参方式为：</p>
+<ol>
+<li><p>指定主题的数目范围为：n_topics = range(min, max)。</p>
+</li>
+<li><p>对$min \leq n \leq max$进行LDA主题模型训练的迭代。计算每一次迭代的Perplexity。</p>
+</li>
+<li><p>绘制Perplexity与n_topics的曲线图，从图像最低点附近寻找最合适的参数。</p>
+</li>
+</ol>
+<h3 id="类实现"><a href="#类实现" class="headerlink" title="类实现"></a>类实现</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">from</span> sklearn.feature_extraction.text <span class="keyword">import</span> CountVectorizer</span><br><span class="line"><span class="keyword">from</span> sklearn.decomposition <span class="keyword">import</span> LatentDirichletAllocation</span><br><span class="line"><span class="keyword">from</span> sklearn.externals <span class="keyword">import</span> joblib</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LDATrain</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, DocLst, NumTopics, MaxIter, MaxFeatures)</span>:</span></span><br><span class="line">        <span class="string">"""初始化，DocLst为输入的训练或测试文档"""</span></span><br><span class="line">        self.DocLst = DocLst    <span class="comment">#输入参数，List类型数据结构，List中每一个元素为一个文档</span></span><br><span class="line">        self.NumTopics = NumTopics  <span class="comment">#话题数目</span></span><br><span class="line">        self.MaxIter = MaxIter  <span class="comment">#最大迭代数据</span></span><br><span class="line">        self.MaxFeatures = MaxFeatures  <span class="comment">#进行词频统计的最大数目</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">#计算词频时需要用到的变量</span></span><br><span class="line">        self.TFVectorizer = <span class="keyword">None</span></span><br><span class="line">        self.TF = <span class="keyword">None</span>  <span class="comment">#词频统计结果</span></span><br><span class="line">        <span class="comment">#进行模型迭代时需要的变量</span></span><br><span class="line">        self.LDAModelLst = []   <span class="comment">#迭代产生的LDA模型列表</span></span><br><span class="line">        self.PerplexityLst = [] <span class="comment">#困惑度列表</span></span><br><span class="line">        self.BestIndex = <span class="keyword">None</span></span><br><span class="line">        self.BestLDAModel = <span class="keyword">None</span>    <span class="comment">#最佳LDA 模型</span></span><br><span class="line">        self.BestLDAModelPerplexity = <span class="keyword">None</span>  <span class="comment">#最佳LDA模型的困惑度</span></span><br><span class="line">        self.BestTopicNum = <span class="keyword">None</span>    <span class="comment">#最合适的主题数</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">LDACountVectorizer</span><span class="params">(self, MaxDf = <span class="number">0.95</span>, MinDf = <span class="number">2</span>)</span>:</span><span class="comment">#这个值还有待确认</span></span><br><span class="line">        <span class="string">"""统计词频函数，调用CountVectorizer完成"""</span></span><br><span class="line">        self.TFVectorizer = CountVectorizer(max_df = MaxDf,\</span><br><span class="line">                                       min_df = MinDf,\</span><br><span class="line">                                       max_features = self.MaxFeatures)</span><br><span class="line">        self.TF = self.TFVectorizer.fit_transform(self.DocLst)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">LDASaveTF</span><span class="params">(self, TFModelPath)</span>:</span></span><br><span class="line">        <span class="string">"""保存词频"""</span></span><br><span class="line">        joblib.dump(self.TF, TFModelPath)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">LDALoadVectorizer</span><span class="params">(self, TFModelPath)</span>:</span></span><br><span class="line">        <span class="string">"""导入之前计算得到的词频统计结果"""</span></span><br><span class="line">        self.TF = joblib.load(TFModelPath)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">LDATrain</span><span class="params">(self, NumTopic, MaxIter)</span>:</span></span><br><span class="line">        <span class="string">"""一次LDA训练，NumTopic为当前训练的主题数，MaxIter为最大迭代数"""</span></span><br><span class="line">        LDAResult = LatentDirichletAllocation(n_components = NumTopic, \</span><br><span class="line">                                              max_iter = MaxIter,\</span><br><span class="line">                                              learning_method = <span class="string">'batch'</span>,\</span><br><span class="line">                                              <span class="comment"># evaluate_every = 200, \</span></span><br><span class="line">                                              <span class="comment"># perp_tol = 0.01</span></span><br><span class="line">                                              )</span><br><span class="line">        <span class="comment"># LDAResult.fit(self.TF)</span></span><br><span class="line">        <span class="comment"># TrainGamma = LDAResult.transform(self.TF)</span></span><br><span class="line">        <span class="comment"># TranPerplexity = LDAResult.perplexity(self.TF, TrainGamma)</span></span><br><span class="line">        <span class="comment"># return TrainGamma, TranPerplexity</span></span><br><span class="line">        <span class="keyword">return</span> LDAResult.fit(self.TF), LDAResult.perplexity(self.TF)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span>  <span class="title">IterationLDATrain</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""迭代训练最佳的LDA模型，</span></span><br><span class="line"><span class="string">        NumTopics为包括所有可能的主题数一个list，</span></span><br><span class="line"><span class="string">        MaxIter为一次LDA训练的最大迭代数"""</span></span><br><span class="line">        <span class="comment">#开始进行迭代训练</span></span><br><span class="line">        index = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> NumTopic <span class="keyword">in</span> self.NumTopics:</span><br><span class="line">            lda, perplexity = self.__LDATrain(NumTopic, self.MaxIter)</span><br><span class="line">            self.LDAModelLst.append(lda)</span><br><span class="line">            self.PerplexityLst.append(perplexity)</span><br><span class="line">            print(index)</span><br><span class="line">            index += <span class="number">1</span></span><br><span class="line">        <span class="comment">#保存最佳模型到</span></span><br><span class="line">        BestIndex = self.PerplexityLst.index(min(self.PerplexityLst))<span class="comment">#获取最佳模型的索引</span></span><br><span class="line">        self.BestLDAModelPerplexity = min(self.PerplexityLst)</span><br><span class="line">        self.BestTopicNum = self.NumTopics[BestIndex]</span><br><span class="line">        self.BestLDAModel = self.LDAModelLst[BestIndex]</span><br><span class="line">        self.BestIndex = BestIndex</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">TransformBestModel</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">for</span> doc <span class="keyword">in</span> self.TF:</span><br><span class="line">            print(self.BestLDAModel.transform(doc))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__print_top_Words</span><span class="params">(self, model, FeatureNames, NumTopWords)</span>:</span></span><br><span class="line">        <span class="keyword">for</span> topic_idx, topic <span class="keyword">in</span> enumerate(model.components_):</span><br><span class="line">            print(<span class="string">"Topic #%d:"</span> % topic_idx)</span><br><span class="line">            print(<span class="string">" "</span>.join([FeatureNames[i]</span><br><span class="line">                            <span class="keyword">for</span> i <span class="keyword">in</span> topic.argsort()[:-NumTopWords - <span class="number">1</span>:<span class="number">-1</span>]]))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">SaveTopicWords</span><span class="params">(self, NumTopWords, FilePath)</span>:</span></span><br><span class="line">        <span class="string">"""保存主题关键词，NumTopWord表示前多少个词"""</span></span><br><span class="line">        TopicWords = <span class="string">""</span></span><br><span class="line">        FeatureNames = self.TFVectorizer.get_feature_names()</span><br><span class="line">        <span class="keyword">for</span> topic_idx, topic <span class="keyword">in</span> enumerate(self.BestLDAModel.components_):</span><br><span class="line">            TopicWords += <span class="string">"Topic #%d:"</span> % topic_idx</span><br><span class="line">            TopicWords += <span class="string">" "</span>.join([FeatureNames[i]</span><br><span class="line">                            <span class="keyword">for</span> i <span class="keyword">in</span> topic.argsort()[:-NumTopWords - <span class="number">1</span>:<span class="number">-1</span>]]) +<span class="string">'\n'</span></span><br><span class="line">        f = open(FilePath + <span class="string">'TopicWords.txt'</span>, <span class="string">'w'</span>)</span><br><span class="line">        f.write(TopicWords)</span><br><span class="line">        f.close()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">PrintBestModelAndPerplexity</span><span class="params">(self, NumTopWords)</span>:</span></span><br><span class="line">        <span class="string">"""打印出最佳模型"""</span></span><br><span class="line">        print(<span class="string">"Best Number of Topic in LDA Model is "</span>, self.BestTopicNum)</span><br><span class="line">        print(<span class="string">"the min Perplexity is"</span>, self.BestLDAModelPerplexity)</span><br><span class="line">        print(<span class="string">"Best Model is \n"</span>)</span><br><span class="line">        self.__print_top_Words(self.BestLDAModel, self.TFVectorizer.get_feature_names(), NumTopWords)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">SaveAllLDAMode</span><span class="params">(self, FilePath)</span>:</span></span><br><span class="line">        <span class="string">"""保存所有LDAModel"""</span></span><br><span class="line">        <span class="comment">#检查该目录是否存在，若不存在则创建</span></span><br><span class="line">        CreateDir(FilePath)</span><br><span class="line">        index = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> m <span class="keyword">in</span> self.LDAModelLst:</span><br><span class="line">            joblib.dump(m, FilePath + <span class="string">'LDA-model-'</span> + str(index) + <span class="string">'.model'</span>)</span><br><span class="line">            index += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">SaveBestModel</span><span class="params">(self, FilePath)</span>:</span></span><br><span class="line">        <span class="string">"""保存最好的LDAmodel"""</span></span><br><span class="line">        joblib.dump(self.BestLDAModel, FilePath + <span class="string">'BestModel.model'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">SavePerplexityCurveAndText</span><span class="params">(self, FilePath)</span>:</span></span><br><span class="line">        <span class="string">"""保存所有的困惑度（Perplexity），对应的曲线图像"""</span></span><br><span class="line">        <span class="comment">#检查该目录是否存在，若不存在则创建</span></span><br><span class="line">        CreateDir(FilePath)</span><br><span class="line">        <span class="comment"># 保存perplexity结果</span></span><br><span class="line">        <span class="keyword">with</span> open(FilePath + <span class="string">'Perplexity.txt'</span>, <span class="string">'w'</span>) <span class="keyword">as</span> f:</span><br><span class="line">            PerplexityLstStr = <span class="string">""</span></span><br><span class="line">            index = <span class="number">0</span></span><br><span class="line">            <span class="keyword">for</span> x <span class="keyword">in</span> self.PerplexityLst:</span><br><span class="line">                PerplexityLstStr += str(index) + <span class="string">'|'</span> + str(self.NumTopics[index]) + <span class="string">'|'</span> + str(x) + <span class="string">'\n'</span></span><br><span class="line">                index += <span class="number">1</span></span><br><span class="line">            f.write(PerplexityLstStr)</span><br><span class="line">        <span class="comment">#绘制曲线并保存</span></span><br><span class="line">        plt.close(<span class="string">'all'</span>)</span><br><span class="line">        Figure = plt.figure()</span><br><span class="line">        ax = Figure.add_subplot(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">        ax.plot(self.NumTopics, self.PerplexityLst)</span><br><span class="line">        ax.set_xlabel(<span class="string">"# of topics"</span>)</span><br><span class="line">        ax.set_ylabel(<span class="string">"Approximate Perplexity"</span>)</span><br><span class="line">        plt.grid(<span class="keyword">True</span>)</span><br><span class="line">        plt.savefig(FilePath + <span class="string">'PerplexityTrend.png'</span>)</span><br><span class="line">        <span class="comment">#plt.show()</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">PrintDocTopicDist</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""打印出文档关于主题的矩阵，每一行表示文档，列表示是当前主题概率"""</span></span><br><span class="line">        doc_topic_dist = self.BestLDAModel.transform(self.TF)</span><br><span class="line">        <span class="keyword">for</span> idx, dist <span class="keyword">in</span> enumerate(doc_topic_dist):</span><br><span class="line">            <span class="comment"># 注意：由于sklearn LDA函数限制，此函数中输出的topic_word矩阵未normalize</span></span><br><span class="line">            dist = [str(x) <span class="keyword">for</span> x <span class="keyword">in</span> dist]</span><br><span class="line">            print(str(idx + <span class="number">1</span>) + <span class="string">','</span>)</span><br><span class="line">            print(<span class="string">','</span>.join(dist) + <span class="string">'\n'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">SaveDocTopicDist</span><span class="params">(self, FilePath)</span>:</span></span><br><span class="line">        <span class="string">"""保存出文档关于主题的矩阵，每一行表示文档，列表示是当前主题概率"""</span></span><br><span class="line">        doc_topic_dist = self.BestLDAModel.transform(self.TF)</span><br><span class="line">        DocTopic = <span class="string">''</span></span><br><span class="line">        <span class="keyword">for</span> idx, dist <span class="keyword">in</span> enumerate(doc_topic_dist):</span><br><span class="line">            <span class="comment"># 注意：由于sklearn LDA函数限制，此函数中输出的topic_word矩阵未normalize</span></span><br><span class="line">            dist = [str(x) <span class="keyword">for</span> x <span class="keyword">in</span> dist]</span><br><span class="line">            DocTopic += <span class="string">'Document '</span> + str(idx + <span class="number">1</span>) + <span class="string">':'</span> +<span class="string">','</span>.join(dist) + <span class="string">'\n'</span></span><br><span class="line">            <span class="comment"># print str(idx + 1) + ','</span></span><br><span class="line">            <span class="comment"># print ','.join(dist) + '\n'</span></span><br><span class="line">        f = open(FilePath + <span class="string">'DocTopicDist.txt'</span>, <span class="string">'w'</span>)</span><br><span class="line">        f.write(DocTopic)</span><br><span class="line">        f.close()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">SaveConfigFile</span><span class="params">(self, FilePath)</span>:</span></span><br><span class="line">        <span class="string">"""保存文件配置"""</span></span><br><span class="line">        f = open(FilePath + <span class="string">'Config.txt'</span>, <span class="string">'a'</span>)</span><br><span class="line">        Config = \</span><br><span class="line">            <span class="string">'k param = '</span> + str(max(self.NumTopics) + <span class="number">1</span>) + <span class="string">'\n'</span> + \</span><br><span class="line">            <span class="string">'MaxFeatures = '</span> + str(self.MaxFeatures) + <span class="string">'\n'</span> + \</span><br><span class="line">            <span class="string">'BestTopicNum = '</span> + str(self.BestTopicNum) + <span class="string">'\n'</span> + \</span><br><span class="line">            <span class="string">'BestIndex = '</span> + str(self.BestIndex)</span><br><span class="line">        f.write(Config)</span><br><span class="line">        f.close()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><h3 id="主题-Perplexity曲线图"><a href="#主题-Perplexity曲线图" class="headerlink" title="主题-Perplexity曲线图"></a>主题-Perplexity曲线图</h3><img src="/2018/07/27/LDAModel/PerplexityTrend.png" title="主题-Perplexity">
+<p>从图中可以看出，困惑度的最低点是主题数为4时。</p>
+<h3 id="主题-关键词"><a href="#主题-关键词" class="headerlink" title="主题-关键词"></a>主题-关键词</h3><p>以下时主题数为4的主题-关键词分布。</p>
+<blockquote><p>Topic #0:couple counseling marriage therapy tip gloria relationship save saving expert help dr back get cambridge<br>Topic #1:today via thought bomber day go say im year love prayer http dont around affected<br>Topic #2:marathon explosion people new looking line injured finish runner victim friend today area via dead<br>Topic #3:suspect bombing police marathon amp photo news say breaking local official officer fbi three area</p>
+</blockquote>
+<p>从关键词的性质可以看出，主题的分类效果较好。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><blockquote><p>[1] 靳志辉,LDA数学八卦[M],2013.<br>[2] <a href="https://blog.csdn.net/TiffanyRabbit/article/details/76445909" target="_blank" rel="noopener">https://blog.csdn.net/TiffanyRabbit/article/details/76445909</a></p>
+</blockquote>
+<p><strong> 文中代码链接：<a href="https://github.com/zhaohuang123/sentiment-analysis/tree/master/blog/LDA" target="_blank" rel="noopener">https://github.com/zhaohuang123/sentiment-analysis/tree/master/blog/LDA</a> </strong></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/LDA/" rel="tag"><i class="fa fa-tag"></i>LDA</a>
+          
+            <a href="/tags/sklearn/" rel="tag"><i class="fa fa-tag"></i>sklearn</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/25/KMeansPP/" rel="next" title="基于Jaccard Distance的K-Means++算法">
+                <i class="fa fa-chevron-left"></i> 基于Jaccard Distance的K-Means++算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Trueno" />
+            
+              <p class="site-author-name" itemprop="name">Trueno</p>
+              <p class="site-description motion-element" itemprop="description">I can do this all day.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/zhaohuang123/" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:zhaohuang132@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#理论基础"><span class="nav-number">1.</span> <span class="nav-text">理论基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sklearn常用类"><span class="nav-number">2.</span> <span class="nav-text">sklearn常用类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CountVectorizer"><span class="nav-number">2.1.</span> <span class="nav-text">CountVectorizer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LatentDirichletAllocation"><span class="nav-number">2.2.</span> <span class="nav-text">LatentDirichletAllocation</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#参数"><span class="nav-number">2.2.1.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#方法"><span class="nav-number">2.2.2.</span> <span class="nav-text">方法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模型训练与调参"><span class="nav-number">3.</span> <span class="nav-text">模型训练与调参</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#以困惑度（Perplexity）为基础调参"><span class="nav-number">3.1.</span> <span class="nav-text">以困惑度（Perplexity）为基础调参</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类实现"><span class="nav-number">3.2.</span> <span class="nav-text">类实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实验"><span class="nav-number">4.</span> <span class="nav-text">实验</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#主题-Perplexity曲线图"><span class="nav-number">4.1.</span> <span class="nav-text">主题-Perplexity曲线图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主题-关键词"><span class="nav-number">4.2.</span> <span class="nav-text">主题-关键词</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Trueno</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: false,
+        appId: 'Lz1fkywg9V2L6B0HQxyWaB7T-gzGzoHsz',
+        appKey: 'c6a76IfGFy2XECWpgMGnUD7t',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>
