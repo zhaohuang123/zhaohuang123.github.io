@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="字符串," />
 
 
 
@@ -81,16 +81,23 @@
 
 
 
-<meta name="description" content="I can do this all day.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Trueno&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="本文主要是介绍利用动态规划与Manacher 算法求解最长回文子串，LeetCode链接 动态规划问题分析对于最长回文子串的求解可以抽象为一个动态规划的多阶段决策过程。例如，对于对于字符串S”ababa”回文判断，如果我们知道该回文字符串的子串s”bab”为回文字符串的话，那么显然对于字符串S的判断，只需要判断S左右两端字符是否一致即可。若S左右两端的字符相同，则在s为回文串的前提下，S为回文字符">
+<meta name="keywords" content="字符串">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LongestPalindromicSubstring">
+<meta property="og:url" content="http://yoursite.com/2018/08/19/LongestPalindromicSubstring/index.html">
 <meta property="og:site_name" content="Trueno&#39;s Blog">
-<meta property="og:description" content="I can do this all day.">
+<meta property="og:description" content="本文主要是介绍利用动态规划与Manacher 算法求解最长回文子串，LeetCode链接 动态规划问题分析对于最长回文子串的求解可以抽象为一个动态规划的多阶段决策过程。例如，对于对于字符串S”ababa”回文判断，如果我们知道该回文字符串的子串s”bab”为回文字符串的话，那么显然对于字符串S的判断，只需要判断S左右两端字符是否一致即可。若S左右两端的字符相同，则在s为回文串的前提下，S为回文字符">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2018/08/19/LongestPalindromicSubstring/img1.png">
+<meta property="og:image" content="http://yoursite.com/2018/08/19/LongestPalindromicSubstring/img2.png">
+<meta property="og:image" content="http://yoursite.com/2018/08/19/LongestPalindromicSubstring/img3.png">
+<meta property="og:image" content="http://yoursite.com/2018/08/19/LongestPalindromicSubstring/img4.png">
+<meta property="og:updated_time" content="2018-10-07T05:22:42.516Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Trueno&#39;s Blog">
-<meta name="twitter:description" content="I can do this all day.">
+<meta name="twitter:title" content="LongestPalindromicSubstring">
+<meta name="twitter:description" content="本文主要是介绍利用动态规划与Manacher 算法求解最长回文子串，LeetCode链接 动态规划问题分析对于最长回文子串的求解可以抽象为一个动态规划的多阶段决策过程。例如，对于对于字符串S”ababa”回文判断，如果我们知道该回文字符串的子串s”bab”为回文字符串的话，那么显然对于字符串S的判断，只需要判断S左右两端字符是否一致即可。若S左右两端的字符相同，则在s为回文串的前提下，S为回文字符">
+<meta name="twitter:image" content="http://yoursite.com/2018/08/19/LongestPalindromicSubstring/img1.png">
 
 
 
@@ -120,13 +127,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/08/19/LongestPalindromicSubstring/"/>
 
 
 
 
 
-  <title>Trueno's Blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title>LongestPalindromicSubstring | Trueno's Blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -145,8 +152,7 @@
     
   
 
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left 
-  page-home">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 	
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -283,9 +289,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -315,9 +321,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/08/19/LongestPalindromicSubstring/" itemprop="url">LongestPalindromicSubstring</a></h1>
+          <h1 class="post-title" itemprop="name headline">LongestPalindromicSubstring</h1>
         
 
         <div class="post-meta">
@@ -418,17 +422,62 @@
       
 
       
-        
-          <p>本文主要是介绍利用动态规划与Manacher 算法求解最长回文子串，LeetCode<em><a href="https://leetcode.com/problems/longest-palindromic-substring/description/" target="_blank" rel="noopener">链接</a></em></p>
+        <p>本文主要是介绍利用动态规划与Manacher 算法求解最长回文子串，LeetCode<em><a href="https://leetcode.com/problems/longest-palindromic-substring/description/" target="_blank" rel="noopener">链接</a></em></p>
 <h2 id="动态规划"><a href="#动态规划" class="headerlink" title="动态规划"></a>动态规划</h2><h3 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h3><p>对于最长回文子串的求解可以抽象为一个动态规划的多阶段决策过程。例如，对于对于字符串S”ababa”回文判断，如果我们知道该回文字符串的子串s”bab”为回文字符串的话，那么显然对于字符串S的判断，只需要判断S左右两端字符是否一致即可。若S左右两端的字符相同，则在s为回文串的前提下，S为回文字符串；若两端字符不相同，则S不是回文字符串。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/08/19/LongestPalindromicSubstring/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
+<a id="more"></a>
+<h3 id="多阶段决策过程抽象"><a href="#多阶段决策过程抽象" class="headerlink" title="多阶段决策过程抽象"></a>多阶段决策过程抽象</h3><p>基于上述的问题分析，假设需要判断的字符串S[i:j]是否为回文串，那么该决策过程可以分解为两步，首先判断子串S[i+1:j-1]是否为回文串，若不是，则S串不是回文字符串；若该子串是回文串，且S[i]等于S[j]，则S为回文字符串。因此，对于任一字符串S[i:j]，我们可以定义二维数组P表示该字符串状态，其中$i &lt; j$：</p>
+<script type="math/tex; mode=display">P(i,j)=\begin{cases}
+true, 如果S[i:j]是回文串\\
+false, 非回文串\\
+\end{cases}</script><p>基于上述二维数组，可以定义如下状态转移方程：</p>
+<script type="math/tex; mode=display">
+P(i,j)=(P(i+1,j-1) and S[i] == S[j])</script><p>上述状态转移方程表示的含义即为$P(i,j)$为true的条件为$P(i+1,j-1)$为真（即S[i+1,j-1]为回文串）且S[i]字符与S[j]字符相等。<br>由于上述状态转移方程之中，必须要求$ i \leq j $ 且 $ i +1 \leq j - 1 $，所以，需要先初始化$i = j $和$ i + 1 = j $的情况，其中$ P[i,i] $初始化为true，$ P[i, i + 1] $依据字符串的实际情况进行。</p>
+<h3 id="python实现"><a href="#python实现" class="headerlink" title="python实现"></a>python实现</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">longestPalindrome</span><span class="params">(self, s)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        :type s: str</span></span><br><span class="line"><span class="string">        :rtype: str</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="comment">#采用动态规划的方法</span></span><br><span class="line">        DPMa = [[<span class="number">0</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(len(s))] <span class="keyword">for</span> j <span class="keyword">in</span> range(len(s))]  <span class="comment">#初始化二维矩阵，用户动态规划预计算</span></span><br><span class="line"></span><br><span class="line">        LenPa = <span class="number">1</span></span><br><span class="line">        iMax = jMax = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(len(s)):</span><br><span class="line">            DPMa[i][i] = <span class="number">1</span></span><br><span class="line">            <span class="keyword">if</span> i + <span class="number">1</span> &lt; len(s) <span class="keyword">and</span> s[i] == s[i + <span class="number">1</span>]:<span class="comment">#出现相同两位的回文字符串</span></span><br><span class="line">                DPMa[i][i + <span class="number">1</span>] = <span class="number">1</span></span><br><span class="line">                LenPa = <span class="number">2</span></span><br><span class="line">                iMax = i</span><br><span class="line">                jMax = i + <span class="number">1</span></span><br><span class="line">        <span class="keyword">for</span> k <span class="keyword">in</span> range(<span class="number">2</span>, len(s)):</span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, len(s) - k):</span><br><span class="line">                j = i + k</span><br><span class="line">                <span class="keyword">if</span> DPMa[i + <span class="number">1</span>][j - <span class="number">1</span>] <span class="keyword">and</span> s[i] == s[j]:</span><br><span class="line">                    DPMa[i][j] = <span class="number">1</span></span><br><span class="line">                    <span class="keyword">if</span> k + <span class="number">1</span> &gt; LenPa:</span><br><span class="line">                        LenPa = k + <span class="number">1</span></span><br><span class="line">                        iMax = i</span><br><span class="line">                        jMax = j</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> s[iMax:jMax + <span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+<h3 id="时间复杂度与空间复杂度"><a href="#时间复杂度与空间复杂度" class="headerlink" title="时间复杂度与空间复杂度"></a>时间复杂度与空间复杂度</h3><p><em>时间复杂度：</em>由上述代码实现可以看出，动态规划过程为两重循环，因此时间复杂度为$O(n^2)$<br><em>空间复杂度：</em>使用了二维数组保存个子串状态，空间复杂度为$O(n^2)$</p>
+<h2 id="Manacher-算法"><a href="#Manacher-算法" class="headerlink" title="Manacher 算法"></a>Manacher 算法</h2><p>利用动态规划解决最长回文子串问题需要 $O(n^2)$ 的时间复杂度，但对于该问题有一种称之为Manacher算法的，$O(n)$的解决方法。以下主要是对LeetCode上关于该算法文章进行翻译<br>、整理而成的（<em><a href="https://articles.leetcode.com/longest-palindromic-substring-part-ii/" target="_blank" rel="noopener">原文</a></em>）</p>
+<h3 id="Note"><a href="#Note" class="headerlink" title="Note"></a>Note</h3><p>这是“最长回文子串”的第二部分。在这篇文章中，我们将分析一个能再线性时间内解决最长回文子串的算法——Manacher算法。在之前的LeetCode的solution中给出了四种不同求解最长回文子串的方法，最简单的算法时间复杂度为$O(n^2)$，空间复杂度为常数级。本文介绍的Manacher算法的时间复杂度和空间复杂度都为O(n).</p>
+<h3 id="Hint"><a href="#Hint" class="headerlink" title="Hint"></a>Hint</h3><p>考虑在之前的解决算法之中出现的最坏情况，即输入字符串是多个回文字符串重叠而成的情况。例如，输入字符串是”aaaaaaaa”和”cabcbabcbabcba”。对于出现的这种最坏情况，我们可以利用回文字符串的对称性来避免一些不必要的重复计算。</p>
+<h3 id="An-O-N-Solution-Manacher’s-Algorithm"><a href="#An-O-N-Solution-Manacher’s-Algorithm" class="headerlink" title="An O(N) Solution (Manacher’s Algorithm):"></a>An O(N) Solution (Manacher’s Algorithm):</h3><p>首先我们需要对输入的字符串进行处理，处理方式为：对输入字符串S，在首尾以及每个字符之插入特殊字符’#’。</p>
+<blockquote><p>例：S=”abaaba”，处理完毕后 T=”#a#b#a#a#b#a#”<br>S为输入原始字符串，T为预处理后的字符串。<br>$S_i$表示S的第i位置的字符，$T_i$表示T的第i位置的字符</p>
+</blockquote>
+<p>经过这样的处理，可以对输入的字符串进行统一化处理。在完成插入操作之后，不论输入的字符串长度是偶数还是奇数，在处理后，字符串长度都将变成奇数长度，并且原字符串中各字符的相对位置不变。</p>
+<p>为了找出最长回文子串，我们可以对每一个$T<em>i$进行如$T</em>(i-d)…T_(i+d)$的扩展来组成一个回文字符串。对于这种扩展，你可以立即看到，d就是以$T_i$为中心扩展而成的回文字符串的长度(这个长度减去了特殊字符’#’的长度))。</p>
+<p>我们需要定义一个存储中间结果的数组P，中间数组$P[i]$存储的是以$T_i$为中心的回文字符串的长度。因此，在P数组计算完成之后，最长回文字符子串的中心点索引就是数组P中最大值的索引。<br>对于上述例子，我们可以从左到右手动计算数组P的值，结果如下：</p>
+<blockquote><p>T = # a # b # a # a # b # a #<br>P = 0 1 0 3 0 1 6 1 0 3 0 1 0</p>
+</blockquote>
+<p>从上述数组P的值中可以看出，P[6]为6，具有最大值，该索引值对应字符子串是”abaaba”，由原始输入字符串可知，该字符串即为最长回文子串。</p>
+<p>若是在回文字符串”abaaba”画一条中轴线，可以看到P数组的值将根据该中轴线对称分布。这不仅仅是这一个回文串的性质，对于任意一回文串，都具有该对称性质。</p>
+<p>根据以上性质，让我们考虑一个更加复杂的、具有回文串叠加的字符串S=”babcbabcbaccba”。</p>
+<blockquote><p><img src="/2018/08/19/LongestPalindromicSubstring/img1.png" title="字符串S分析"></p>
+<p>上图展示了S字符串在完成特殊插入之后的字符串T。现在先假定你已经到达了P数组被部分完成的状态。实心中轴线表示回文子串”abcbabcba”的中点，两条虚线严格表示该回文串的边界，L和R表示左右边界索引值。基于该中轴线，索引i的镜像位置的索引表示$i^,$。那么接下来的问题是，如何计算数组元素$P[i]$的值？</p>
+</blockquote>
+<p>假定我们当前需要计算的是当索引为$P[13]$的值。首先我们可以观察其基于以C为中心的回文子串的镜像位置$i^,$索引表示的值。针对$i=13$，其镜像对称位置$i^,$为9。</p>
+<blockquote><p><img src="/2018/08/19/LongestPalindromicSubstring/img2.png" title="字符串S分析"></p>
+<p>上图两条绿色的实线表示的是以$i$和$i^,$为中心表示的回文串的覆盖范围。我们可以看到i的镜像位置是$i^,$，$P[i^,]=P[9]=1$。由上图回文字符串基于中心的对称性可知，可以清楚的看到$P[i]=P[13]$的值也是1。</p>
+</blockquote>
+<p>正如之前看到的，由于回文字符串的对称性，$P[i^,]=P[i]=1$显然是正确的。事实上，在上述字符串T中，位于中心点之后的三个元素都符合对称性的要求，即有$P[12]=P[10]=0, P[13]=P[9]=1, P[14]=P[8]=0$。</p>
+<blockquote><p><img src="/2018/08/19/LongestPalindromicSubstring/img3.png" title="字符串S分析"></p>
+<p>现在需要考虑的问题是，当i为15时，基于C的镜像位置$i^,=7$，那么是否有$P[15]=P[7]=7$呢？</p>
+</blockquote>
+<p>现在需要考虑索引为15的时候，$P[i]$的值是多少？如果考虑对称性的话，$P[i]$的值应该与$P[i^,]$的值相同，都为7。但从上图中可以看出，显然这个是不成立的。如果我们以$T_15$为中心进行回文字符串的扩展，将可以组成回文串”a#b#c#b#a”，这个回文串显然是比对称性所计算出来的回文串要小。因此，接下来需要考虑为什么会出现这种情况。</p>
+<blockquote><p><img src="/2018/08/19/LongestPalindromicSubstring/img4.png" title="字符串S分析"></p>
+<p>在上图之中，绿色实线表示的区域是以C为中心基于对称性的边界范围。红色的实线表示的是以C为中心对称性不匹配的区域，即不是回文串的部分。绿色的虚线表示的区域是跨越中心的部分。</p>
+</blockquote>
+<p>从上图中，以$i^,=7$以及$i=15$为中心的子串在绿色实线区域内是匹配的非常好的。在穿越中心的部分（绿色虚线部分）也是非常完整的复合对称性的要求。仔细观察可以发现，$P[i^,]=7$，而却其扩展一直延伸穿过了回文字符串的左边缘（直到红色实线部分），红色实线部分就不在属于以C为中心的回文对称性质部分。针对上述$i=15$时，当$P[i]&gt;5$时，我们可以知道，要找出其准确的$P[i]$值，必须对边界R之外的字符串进行格外的匹配。在本例中，因为$P[21] \not= P[1]$，我们可以得出结论，$P[i]=5$。</p>
+<p>上述算法要点：</p>
+<script type="math/tex; mode=display">
+if P[i^,] \leq R - i,
+then P[i] \leftarrow P[i^,]
+else P[i] \geq R - i</script><p><em>上述算法要点，原文关于else的赋值给错了，原文是$P[i] \geq P[i^,]$，应修改为上述表达，表示当前索引串的右边界必定会大于当前右边界</em></p>
+<p>上述步骤就是整个Manacher 算法的核心步骤以及本质。基于上述算法过程，接下来剩下的步骤就是确定我们应该在什么是时候向右移动中心点以及对应的边界R。相比之前的分析，这个问题是非常简单的，移动方式如下：</p>
+<blockquote><p>如果以i为中心的回文串的扩展越过了当前右边界R，我们将更新中心点C为i（即新的回文串的中心），并且我们将边界R扩展到新的回文串的右边界。</p>
+</blockquote>
+<p>从上述算法中可以看出，每一个步骤都存在两种情况：如果$P[i] \leq R - i$，则只有$P[i] = P[i^,]$ 这一个步骤；其他一种情况是，我们需要尝试对右边界进行扩展，并将回文字符串的中心修改为i。扩展右边界R（内部循环完成）最多将花费N步完成（N表示输入字符串的长度），每一个中心点的定位和测试总计将花费N步。因此，这个算法将保证能在最多$2*N$步内完成。因此，该算法的时间复杂度就是O(n)。</p>
+<h3 id="python实现-1"><a href="#python实现-1" class="headerlink" title="python实现"></a>python实现</h3><p>原文之中给出了java代码实现，以下是依据该代码的python实现。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">longestPalindrome</span><span class="params">(self, s)</span>:</span></span><br><span class="line">        s = Solution.PreProcess(s)  <span class="comment">#预处理</span></span><br><span class="line">        P = [<span class="number">0</span>] * (len(s))  <span class="comment">#p数组，保存回文长度</span></span><br><span class="line">        C = <span class="number">0</span>   <span class="comment">#中心点位置，初始化为0</span></span><br><span class="line">        R = <span class="number">0</span>   <span class="comment">#右边界位置，初始化为0</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>, len(s) - <span class="number">1</span>):</span><br><span class="line">            iMirror = <span class="number">2</span>*C - i</span><br><span class="line">            <span class="keyword">if</span> iMirror &lt; <span class="number">0</span>:</span><br><span class="line">                iMirror = <span class="number">0</span></span><br><span class="line">            <span class="comment"># 计算在当前以C为中心的的最大对称位置</span></span><br><span class="line">            P[i] = min(R - i, P[iMirror]) <span class="keyword">if</span> R &gt; i <span class="keyword">else</span> <span class="number">0</span></span><br><span class="line">            <span class="comment"># 对边界进行扩展，利用循环对边界进行扩展</span></span><br><span class="line">            <span class="keyword">while</span> (s[i - <span class="number">1</span> - P[i]] == s[i + <span class="number">1</span> + P[i]]):</span><br><span class="line">                P[i] += <span class="number">1</span></span><br><span class="line">            <span class="comment"># 计算新的C和R的位置</span></span><br><span class="line">            <span class="keyword">if</span> (i + P[i] &gt; R):</span><br><span class="line">                R = i + P[i]</span><br><span class="line">                C = i</span><br><span class="line"></span><br><span class="line">        MaxLen = max(P)</span><br><span class="line">        index = P.index(MaxLen)</span><br><span class="line">        <span class="keyword">return</span> s[index - MaxLen: index + MaxLen + <span class="number">1</span>].replace(<span class="string">'#'</span>, <span class="string">''</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">PreProcess</span><span class="params">(s)</span>:</span></span><br><span class="line">       <span class="string">"""</span></span><br><span class="line"><span class="string">       预处理过程，在字符串收尾插入^$ ，在字符串间插入#</span></span><br><span class="line"><span class="string">       :param s: 待处理字符串</span></span><br><span class="line"><span class="string">       :return: 处理完成的字符串</span></span><br><span class="line"><span class="string">       """</span></span><br><span class="line">       sList = list(<span class="string">'^'</span> + s + <span class="string">'$'</span>)</span><br><span class="line">       <span class="keyword">return</span> <span class="string">'#'</span>.join(sList)</span><br></pre></td></tr></table></figure>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><blockquote><p>[1] <a href="https://articles.leetcode.com/longest-palindromic-substring-part-ii/" target="_blank" rel="noopener">https://articles.leetcode.com/longest-palindromic-substring-part-ii/</a></p>
+</blockquote>
+
       
     </div>
     
@@ -443,389 +492,36 @@
 
     <footer class="post-footer">
       
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/27/LDAModel/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Trueno">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Trueno's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/07/27/LDAModel/" itemprop="url">LDA主题模型</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-27T10:53:33+08:00">
-                2018-07-27
-              </time>
-            
-
-            
-
-            
-          </span>
-
+        <div class="post-tags">
           
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/机器学习/" itemprop="url" rel="index">
-                    <span itemprop="name">机器学习</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/机器学习/主题模型/" itemprop="url" rel="index">
-                    <span itemprop="name">主题模型</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
+            <a href="/tags/字符串/" rel="tag"><i class="fa fa-tag"></i>字符串</a>
           
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/07/27/LDAModel/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/27/LDAModel/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2,943
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
         </div>
-      </header>
-    
+      
 
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
+      
       
       
 
       
-        
-          <p>本文主要是介绍如何利用sklearn框架中LatentDirichletAllocation类完成LDA模型的训练。</p>
-<h2 id="理论基础"><a href="#理论基础" class="headerlink" title="理论基础"></a>理论基础</h2><p>&emsp;&emsp;LDA是一个无监督的学习模型，它假设每个文档包含多个主题，文档中的每个主题都是基于词的概率分布。作为一个基于贝叶斯网络的文档生成模型，LDA刻画的是文档生成的一个概率化过程。<br>&emsp;&emsp;LDA的输入由一组文档D组成的词料库。LDA的输出包括文档主题分布$\theta$和主题中的词语的分布$\phi$。这里的$\theta$和$\phi$都假设服从多项式分布。为让分布更平滑，再假设这两个参数的先验分布服从狄利克雷分布，参数分别为$\alpha$和$\beta$。因为狄利克雷分布是多项式分布的共轭先验分布，所以假设该多项式分布的先验服从狄利克雷分布可以极大简化统计计算的过程。狄利克雷分布中有多个参数，再LDA中利用狄利克雷分布时，大多将参数设为同一个数值，这种设为同一个数值的狄利克雷分布称为对称的狄利克雷分布。以下时LDA模型生成一篇文档的方式。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/07/27/LDAModel/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/27/LDAModel/" rel="next" title="LDA主题模型">
+                <i class="fa fa-chevron-left"></i> LDA主题模型
+              </a>
+            
           </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
 
-    
+          <span class="post-nav-divider"></span>
 
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/25/KMeansPP/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Trueno">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Trueno's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/07/25/KMeansPP/" itemprop="url">基于Jaccard Distance的K-Means++算法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+          <div class="post-nav-prev post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-25T13:36:57+08:00">
-                2018-07-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/机器学习/" itemprop="url" rel="index">
-                    <span itemprop="name">机器学习</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/机器学习/聚类算法/" itemprop="url" rel="index">
-                    <span itemprop="name">聚类算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/07/25/KMeansPP/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/25/KMeansPP/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  937
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          <p>本文的内容以<em><a href="http://localhost:4000/2018/07/19/KMeansJD/" target="_blank" rel="noopener">基于Jaccard Distance的K-Means算法</a></em>为基础，将原始K-Means算法随机选择初始向量的方法修改为K-Means++的概率选择方法，同样本文K-Means++算法的距离计算同样是基于Jaccard Distance距离的。</p>
-<h2 id="理论基础"><a href="#理论基础" class="headerlink" title="理论基础"></a>理论基础</h2><p>&emsp;&emsp;原始K-Means算法通过贪心策略，迭代化求解最小平方化误差（K-Means算法的求解过程实际上就是求解最小平方化误差）。但是由于其初始均值向量的选择具有随机性、不确定性，其算法不够稳定，有可能会造成迭代次数较多，算法时间复杂度较高。针对K-Means算法的问题，David Arthur等人提出了K-Means++算法.   </p>
-<p>&emsp;&emsp;K-Means++算法与K-Means算法的主要差异在于初始均值的选取。选取初始均值向量算法如下：</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/07/25/KMeansPP/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -835,197 +531,11 @@
   </article>
 
 
-    
-      
 
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/19/KMeansJD/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Trueno">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Trueno's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/07/19/KMeansJD/" itemprop="url">基于Jaccard Distance的K-Means算法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-19T23:26:29+08:00">
-                2018-07-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/机器学习/" itemprop="url" rel="index">
-                    <span itemprop="name">机器学习</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/机器学习/聚类算法/" itemprop="url" rel="index">
-                    <span itemprop="name">聚类算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/07/19/KMeansJD/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/19/KMeansJD/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  3,654
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>本文主要是介绍如何以Jaccard Distance(JD)为基础，对Twitter的推文数据进行数据聚类。</p>
-<h2 id="理论基础"><a href="#理论基础" class="headerlink" title="理论基础"></a>理论基础</h2><h3 id="性能度量方式"><a href="#性能度量方式" class="headerlink" title="性能度量方式"></a>性能度量方式</h3><p>  &emsp;&emsp;聚类性能度量级聚类 即<em>聚类有效性指标（vlidity index）</em>，该指标可以分为两类：外部指标（external index），将聚类结果与某个“参考模型”比较；内部指标（internal index），直接分析聚类结果，不利用外部参考模型，以下给出两个内部指标度量方式：Dunn指数（Dunn Index，DI）以及误差平方和（Sum Of The Squared Errors，SSE）。<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/07/19/KMeansJD/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
+    <div class="post-spread">
       
     </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
   </div>
-  
-  
-  
-  </article>
-
-
-    
-  </section>
-
-  
 
 
           </div>
@@ -1033,6 +543,13 @@
 
 
           
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
 
         </div>
         
@@ -1053,8 +570,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -1141,6 +667,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#动态规划"><span class="nav-number">1.</span> <span class="nav-text">动态规划</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题分析"><span class="nav-number">1.1.</span> <span class="nav-text">问题分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多阶段决策过程抽象"><span class="nav-number">1.2.</span> <span class="nav-text">多阶段决策过程抽象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#python实现"><span class="nav-number">1.3.</span> <span class="nav-text">python实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#时间复杂度与空间复杂度"><span class="nav-number">1.4.</span> <span class="nav-text">时间复杂度与空间复杂度</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Manacher-算法"><span class="nav-number">2.</span> <span class="nav-text">Manacher 算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Note"><span class="nav-number">2.1.</span> <span class="nav-text">Note</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hint"><span class="nav-number">2.2.</span> <span class="nav-text">Hint</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#An-O-N-Solution-Manacher’s-Algorithm"><span class="nav-number">2.3.</span> <span class="nav-text">An O(N) Solution (Manacher’s Algorithm):</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#python实现-1"><span class="nav-number">2.4.</span> <span class="nav-text">python实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -1296,6 +838,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
